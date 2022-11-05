@@ -201,6 +201,6 @@ def SimpleTimSort(L,key=lambda x:x):
         segs = segments(L)
         processSegments(L,segs,key)
         M = [None] * len(L)
-        return mergeRound(L,segs,M,key)
+        return mergeRounds(L,segs,M,key)
 
 # End of file
