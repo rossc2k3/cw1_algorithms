@@ -158,14 +158,14 @@ def processSegments(L,segs,key=lambda x:x):
 def mergeSegments(L,seg1,seg2,M,start,key=lambda x:x):
    processSegments(L, [seg1, seg2])         #saves some runtime if either of the segments need sorted
    insertSort(L, seg1.start, seg2.end, key) #this works since we're working with adjacent segments, but wouldn't work if we were sorting nonadjacent segments
-   for listPos in range(seg1.start, seg2.end):
+   for listPos in range(seg2.end - seg1.start):
        M[start + listPos] = L[seg1.start + listPos] #standard code for transplanting one list's content to another using inplace
    return (seg2.end - seg1.start)
 
 
 
 def copySegment(L,seg,M,start):
-    for listPos in range(seg.start, seg.end):
+    for listPos in range(seg.end - seg.start):
         M[start + listPos] = L[seg.start + listPos] #standard code for transplanting one list's content to another using inplace
     return (seg.end - seg.start)
 
@@ -173,10 +173,12 @@ def copySegment(L,seg,M,start):
 
 # TODO: Task 3.
 def mergeRound(L,segs,M,key=lambda x:x):
-    for listPos in range(len(segs) // 2):
-        mergeSegments(L, segs[listPos], segs[listPos + 1], M, segs[listPos].start, key)
-    if len(segs) // 2 == 1:
-        copySegment(L, segs[-1], M, segs[-1].start)
+
+    for listPos in range(0, len(segs), 2):
+        if listPos + 1 < len(segs):
+            mergeSegments(L, segs[listPos], segs[listPos + 1], M, segs[listPos].start, key)
+        else:
+            copySegment(L, segs[-1], M, segs[-1].start)
     segs = segments(M)
     return segs
         
