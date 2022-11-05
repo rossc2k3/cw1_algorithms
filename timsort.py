@@ -141,9 +141,9 @@ def insertSort(L,start,end,key=lambda x:x):
         L[prev + 1] = swap
 
 def reverse(L,start,end):
-    while(start < end):
+    while(start < end):  #we only want to run for 1/2 the length of the list, simulataneously increment and decrement start and end respectively
         end -= 1
-        L[start], L[end] = L[end], L[start]
+        L[start], L[end] = L[end], L[start] #swap start with end, start+1 with end-1, etc
         start += 1
 
 def processSegments(L,segs,key=lambda x:x):
@@ -156,17 +156,17 @@ def processSegments(L,segs,key=lambda x:x):
 
 # TODO: Task 2.
 def mergeSegments(L,seg1,seg2,M,start,key=lambda x:x):
-   processSegments(L, [seg1, seg2])
-   insertSort(L, seg1.start, seg2.end, key)
+   processSegments(L, [seg1, seg2])         #saves some runtime if either of the segments need sorted
+   insertSort(L, seg1.start, seg2.end, key) #this works since we're working with adjacent segments, but wouldn't work if we were sorting nonadjacent segments
    for listPos in range(seg1.start, seg2.end):
-       M[start + listPos] = L[seg1.start + listPos]
+       M[start + listPos] = L[seg1.start + listPos] #standard code for transplanting one list's content to another using inplace
    return (seg2.end - seg1.start)
 
 
 
 def copySegment(L,seg,M,start):
     for listPos in range(seg.start, seg.end):
-        M[start + listPos] = L[seg.start + listPos]
+        M[start + listPos] = L[seg.start + listPos] #standard code for transplanting one list's content to another using inplace
     return (seg.end - seg.start)
 
 
@@ -177,7 +177,19 @@ def mergeRound(L,segs,M,key=lambda x:x):
         mergeSegments(L, segs[listPos], segs[listPos + 1], M, segs[listPos].start, key)
     if len(segs) // 2 == 1:
         copySegment(L, segs[-1], M, segs[-1].start)
-#   mergeRounds(L,segs,M,key=lambda x:x):
+    segs = segments(M)
+    return segs
+        
+def mergeRounds(L,segs,M,key=lambda x:x):
+    if len(segs) > 1: #inital run, meaning if only two segments, only have to run once - if more than 2, move into while loop
+        segs = mergeRound(L, segs, M, key)
+    while len(segs) > 1:
+        segs = mergeRound(M, segs, L, key) #if still more than 1 segment, run again
+        if len(segs) > 1:
+            segs = mergeRound(L, segs, M, key)
+
+    return L
+        
 
 
 # Provided code:
